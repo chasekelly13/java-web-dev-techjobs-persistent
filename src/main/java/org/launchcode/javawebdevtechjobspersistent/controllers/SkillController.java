@@ -22,7 +22,7 @@ public class SkillController {
     public String displayAllSkills(Model model) {
 
         model.addAttribute("title", "All Skills");
-        model.addAttribute("events", skillRepository.findAll());
+        model.addAttribute("skills", skillRepository.findAll());
 
         return "skills/index";
     }

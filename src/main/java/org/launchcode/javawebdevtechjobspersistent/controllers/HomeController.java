@@ -2,6 +2,7 @@ package org.launchcode.javawebdevtechjobspersistent.controllers;
 
 import org.launchcode.javawebdevtechjobspersistent.models.Employer;
 import org.launchcode.javawebdevtechjobspersistent.models.Job;
+import org.launchcode.javawebdevtechjobspersistent.models.Skill;
 import org.launchcode.javawebdevtechjobspersistent.models.data.EmployerRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.JobRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.SkillRepository;
@@ -34,6 +35,7 @@ public class HomeController {
     public String index(Model model) {
 
         model.addAttribute("title", "My Jobs");
+        model.addAttribute("jobs", jobRepository.findAll());
 
         return "index";
     }
@@ -52,26 +54,20 @@ public class HomeController {
                                        Errors errors, Model model, @RequestParam int employerId, @RequestParam List<Integer> skills) {
 
 
-
-
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Job");
+            System.out.println(errors.toString());
             return "add";
+
         }
-        //create an object that is associated with the input RequestParam "employerId"
+
         Optional<Employer> results = employerRepository.findById(employerId);
-
-        //create an employer class from the results object.
         Employer employer = results.get();
-
-        //set the employer object that is associated with employerId to the newJob that has been created (mapping the new employer object to the newJob object
         newJob.setEmployer(employer);
 
+        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+        newJob.setSkills(skillObjs);
 
-//            List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
-//            newJob.setSkills(skillObjs);
-
-        //saving the newJob object to the jobRepository
         jobRepository.save(newJob);
         return "redirect:";
     }
@@ -81,9 +77,9 @@ public class HomeController {
 
         Optional<Job> optJob = jobRepository.findById(jobId);
         if (optJob.isPresent()) {
-            Job job = (Job) optJob.get();
-            model.addAttribute("Job", job);
-            return "employers/view";
+            Job job = optJob.get();
+            model.addAttribute("job", job);
+            return "jobs/view";
         } else {
             return "redirect:../";
         }
